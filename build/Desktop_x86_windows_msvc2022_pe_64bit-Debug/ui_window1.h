@@ -23,7 +23,7 @@ public:
     {
         if (window1->objectName().isEmpty())
             window1->setObjectName("window1");
-        window1->resize(400, 300);
+        window1->resize(859, 642);
 
         retranslateUi(window1);
 

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +23,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     void setStyle();
+    QCustomPlot *wGraphic;
+
 };
 
 #endif // MAINWINDOW_H

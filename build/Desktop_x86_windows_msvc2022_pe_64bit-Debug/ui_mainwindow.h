@@ -16,7 +16,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -30,7 +29,6 @@ public:
     QLabel *label;
     QPushButton *pushButton_3;
     QPushButton *pushButton;
-    QSpacerItem *verticalSpacer;
     QPushButton *pushButton_2;
     QMenuBar *menubar;
     QStatusBar *statusbar;
@@ -39,7 +37,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(544, 273);
+        MainWindow->resize(530, 284);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
@@ -60,26 +58,22 @@ public:
         pushButton_3 = new QPushButton(centralwidget);
         pushButton_3->setObjectName("pushButton_3");
 
-        gridLayout->addWidget(pushButton_3, 4, 0, 1, 1);
+        gridLayout->addWidget(pushButton_3, 3, 0, 1, 1);
 
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName("pushButton");
 
-        gridLayout->addWidget(pushButton, 2, 0, 1, 1);
-
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Fixed);
-
-        gridLayout->addItem(verticalSpacer, 1, 0, 1, 1);
+        gridLayout->addWidget(pushButton, 1, 0, 1, 1);
 
         pushButton_2 = new QPushButton(centralwidget);
         pushButton_2->setObjectName("pushButton_2");
 
-        gridLayout->addWidget(pushButton_2, 3, 0, 1, 1);
+        gridLayout->addWidget(pushButton_2, 2, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 544, 25));
+        menubar->setGeometry(QRect(0, 0, 530, 25));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");

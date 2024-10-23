@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,12 +11,15 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    qcustomplot.cpp \
     window1.cpp \
     window2.cpp \
     window3.cpp
 
 HEADERS += \
+    TaskParameters.h \
     mainwindow.h \
+    qcustomplot.h \
     window1.h \
     window2.h \
     window3.h
