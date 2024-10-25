@@ -1,6 +1,6 @@
 #include "window1.h"
 #include "ui_window1.h"
-#include "TaskParameters.h"
+#include "TaskManager.h"
 
 window1::window1(QWidget *parent) :
     QDialog(parent),
@@ -162,6 +162,8 @@ void window1::startCalculation() {
     params.epsilon = epsilonInput->text().toDouble();
     params.boundaryPrecision = boundaryPrecisionInput->text().toDouble();
     params.initialStep = initialStepInput->text().toDouble();
+    // Добавил в параметры тип задачи в виде индекса
+    params.taskTypeInd = taskComboBox->currentIndex();
 
     // Пример вывода параметров для отладки
     outputTextEdit->clear();
@@ -169,6 +171,19 @@ void window1::startCalculation() {
     outputTextEdit->append(params.toString());  // Используем объект для вывода
 
     // Здесь можно вызвать функции для вычислений, передав объект params
+    TaskManager manager(&params);
+    DataTransferObj data = manager.getSolution();
+
+    //ошибка
+    if(data._type == -1) return;
+
+    customPlot->addGraph();
+    customPlot->graph(0)->setData(data.xData, data.numericalSolutionData);
+
+    customPlot->addGraph();
+    customPlot->graph(1)->setData(data.xData, data.trueSolutionData);
+
+    customPlot->replot();
 }
 
 void window1::stopCalculation() {

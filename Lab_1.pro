@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    TaskManager.cpp \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
@@ -17,12 +18,15 @@ SOURCES += \
     window3.cpp
 
 HEADERS += \
+    DataTransferObj.h \
+    TaskManager.h \
     TaskParameters.h \
     mainwindow.h \
     qcustomplot.h \
     window1.h \
     window2.h \
-    window3.h
+    window3.h \
+    rk4.h
 
 FORMS += \
     mainwindow.ui \

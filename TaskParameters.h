@@ -11,18 +11,20 @@ public:
     double epsilon;             // Контроль локальной погрешности
     double boundaryPrecision;   // Точность выхода на границу
     double initialStep;         // Начальный шаг
+    int taskTypeInd; // Индекс задачи (0 - тестовая, 1 - основная №1, 2 - основная #2)
 
     TaskParameters() {}
 
     // Функция для вывода данных (например, для отладки)
     QString toString() const {
-        return QString("Task: %1\nInitial Conditions: %2\nNmax: %3\nEpsilon: %4\nBoundary Precision: %5\nInitial Step: %6")
+        return QString("Task: %1\nInitial Conditions: %2\nNmax: %3\nEpsilon: %4\nBoundary Precision: %5\nInitial Step: %6\nTask index: %7")
         .arg(taskType)
             .arg(initialConditions)
             .arg(nMax)
             .arg(epsilon)
             .arg(boundaryPrecision)
-            .arg(initialStep);
+            .arg(initialStep)
+            .arg(taskTypeInd);
     }
 };
 
