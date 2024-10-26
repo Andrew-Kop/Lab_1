@@ -12,10 +12,7 @@ SOURCES += \
     TaskManager.cpp \
     main.cpp \
     mainwindow.cpp \
-    qcustomplot.cpp \
-    window1.cpp \
-    window2.cpp \
-    window3.cpp
+    qcustomplot.cpp
 
 HEADERS += \
     DataTransferObj.h \
@@ -23,16 +20,10 @@ HEADERS += \
     TaskParameters.h \
     mainwindow.h \
     qcustomplot.h \
-    window1.h \
-    window2.h \
-    window3.h \
     rk4.h
 
 FORMS += \
-    mainwindow.ui \
-    window1.ui \
-    window2.ui \
-    window3.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
