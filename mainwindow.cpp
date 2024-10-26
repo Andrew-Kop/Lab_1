@@ -11,23 +11,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Установка заголовка окна
+    //Установка заголовка окна
     this->setWindowTitle("Лабораторная работа №1");
 
-    //Установил иконку
+    //Установка иконки
     setWindowIcon(QIcon(":/icons/icons/icon.png"));
 
-    // Установка флагов окна
-    this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    //Установка флагов окна
+    this->setWindowFlags(Qt::Window | Qt:: WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 
-
-    // Инициализация выпадающего списка задач
+    //Инициализация выпадающего списка
     taskComboBox = new QComboBox(this);
     taskComboBox->addItem("Тестовая задача");
     taskComboBox->addItem("Основная задача №1");
     taskComboBox->addItem("Основная задача №2");
 
-    // Инициализация полей ввода параметров
+    //Инициализация полей ввода параметров
     initialConditions = new QLineEdit(this);
     initialConditions->setPlaceholderText("Начальные условия");
 
@@ -49,32 +48,42 @@ MainWindow::MainWindow(QWidget *parent)
     check_of_error_rate = new QCheckBox("С учётом локальной погрешности?", this);
     check_of_error_rate->setStyleSheet("QCheckBox { font-size: 14px }");
 
-    // Новые поля ввода для основной задачи №2
+    //Поля для основной задачи №2
+
     additionalParam1 = new QLineEdit(this);
-    additionalParam1->setPlaceholderText("Дополнительный параметр 1 = a");
+    additionalParam1->setPlaceholderText("Дополнительный параметр 1 = а");
 
     additionalParam2 = new QLineEdit(this);
     additionalParam2->setPlaceholderText("Дополнительный параметр 2 = b");
 
-
-    // Инициализация кнопок управления
+    //Инициализация кнопок управления
     startButton = new QPushButton("Начать расчёт", this);
-    stopButton = new QPushButton("Остановить", this);
+    //stopButton = new QPushButton("Остановить", this);
 
-    // Инициализация графика
+    //Инициализация графиков
     customPlot = new QCustomPlot(this);
-    customPlot->setMinimumHeight(300);
-    customPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    customPlot->setMinimumHeight(250);
+    customPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
+    phasePortraitPlot = new QCustomPlot(this);
+    phasePortraitPlot->setMinimumHeight(250);
+    phasePortraitPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    //Добавление графиков в компоновщик
+    QWidget *graphsWidget = new QWidget(this);
+    QHBoxLayout *graphsLayout = new QHBoxLayout(graphsWidget); //устанавливаем компоновщик на widget
+
+    //Добавление графиков в компоновщик
+    graphsLayout->addWidget(customPlot);
+    graphsLayout->addWidget(phasePortraitPlot);
+    phasePortraitPlot->setVisible(false);
+
+    //Инициализация таблиц
     resultsTableTestTask = new QTableWidget(this);
     resultsTableTestTask->setColumnCount(11);
     resultsTableTestTask->setRowCount(20);
-    resultsTableTestTask->setHorizontalHeaderLabels(QStringList() << "i" << "xi" << "vi" << "v2i" << "vi - v2i"
+    resultsTableTestTask->setHorizontalHeaderLabels(QStringList()<< "i" << "xi" << "vi" << "v2i" << "vi - v2i"
                                                                   << "ОЛП" << "hi" << "C1" << "C2" << "ui" << "|ui - vi|");
-
-    // Устанавливаем режим растягивания для заголовков
-    resultsTableTestTask->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
     resultsTableMainTask = new QTableWidget(this);
     resultsTableMainTask->setColumnCount(9);
     resultsTableMainTask->setRowCount(20);
@@ -83,8 +92,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Устанавливаем режим растягивания для заголовков
     resultsTableMainTask->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    resultsTableTestTask->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Используем QStackedWidget для переключения таблиц
+    //Используем QStackedWidget для переключения таблиц
     tableStackedWidget = new QStackedWidget(this);
     tableStackedWidget->addWidget(resultsTableTestTask);  // Первая таблица
     tableStackedWidget->addWidget(resultsTableMainTask);  // Вторая таблица
@@ -102,16 +112,16 @@ MainWindow::MainWindow(QWidget *parent)
     inputLayout->addWidget(initialStepInput, 2, 1);               // Начальный шаг
     inputLayout->addWidget(check_of_error_rate, 3, 0);      // Чекбокс, растягиваем на 2 колонки
     inputLayout->addWidget(rightborder, 3, 1);                    // Поле правой границы
-    inputLayout->addWidget(startButton, 4, 0);                    // Кнопка "Начать расчёт"
-    inputLayout->addWidget(stopButton, 4, 1);                     // Кнопка "Остановить"
+    inputLayout->addWidget(startButton, 4, 0, 1 , 2);                    // Кнопка "Начать расчёт"
+    //inputLayout->addWidget(stopButton, 4, 1);                     // Кнопка "Остановить"
     inputLayout->addWidget(additionalParam1, 5, 0);
     inputLayout->addWidget(additionalParam2, 5, 1);
     additionalParam1->setVisible(false); // Скрыть по умолчанию
     additionalParam2->setVisible(false); // Скрыть по умолчанию
 
-
+    //Добавляем всё в mainLayout
     mainLayout->addLayout(inputLayout);
-    mainLayout->addWidget(customPlot);
+    mainLayout->addWidget(graphsWidget);
     mainLayout->addWidget(tableStackedWidget);  // Добавляем stack виджет для таблиц
 
     // Добавляем справочную информацию
@@ -134,7 +144,7 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(helpLabel);  // Добавляем заголовок справки
     mainLayout->addWidget(outputTextEdit);  // Добавляем текстовое поле
 
-
+    //Устанавливаем центральный Layout на окно
     QWidget *centralWidget = new QWidget(this);
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
@@ -142,7 +152,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Подключение сигналов и слотов
     connect(taskComboBox, &QComboBox::currentIndexChanged, this, &MainWindow::onTaskTypeChanged);
     connect(startButton, &QPushButton::clicked, this, &MainWindow::startCalculation);
-    connect(stopButton, &QPushButton::clicked, this, &MainWindow::stopCalculation);
+    //connect(stopButton, &QPushButton::clicked, this, &MainWindow::stopCalculation);
 
     // Установка стилей для кнопок
     QString buttonStyle =
@@ -169,7 +179,7 @@ MainWindow::MainWindow(QWidget *parent)
         "}";
 
     startButton->setStyleSheet(buttonStyle);
-    stopButton->setStyleSheet(buttonStyle);
+    //stopButton->setStyleSheet(buttonStyle);
 }
 
 MainWindow::~MainWindow() {
@@ -179,21 +189,82 @@ MainWindow::~MainWindow() {
 void MainWindow::onTaskTypeChanged(int index) {
     // Переключаемся между таблицами в зависимости от выбранного типа задачи
     if (index == 0) {
-        tableStackedWidget->setCurrentWidget(resultsTableTestTask);  // Показываем таблицу для тестовой задачи
-        additionalParam1->setVisible(false); // Скрываем дополнительные параметры
+        tableStackedWidget->setCurrentWidget(resultsTableTestTask);
+        phasePortraitPlot->setVisible(false);  // Скрываем фазовый портрет
+        additionalParam1->setVisible(false);
         additionalParam2->setVisible(false);
     } else if (index == 1) {
-        tableStackedWidget->setCurrentWidget(resultsTableMainTask);  // Показываем таблицу для основной задачи 1
-        additionalParam1->setVisible(false); // Скрываем дополнительные параметры
+        tableStackedWidget->setCurrentWidget(resultsTableMainTask);
+        phasePortraitPlot->setVisible(false);  // Скрываем фазовый портрет
+        additionalParam1->setVisible(false);
         additionalParam2->setVisible(false);
     } else if (index == 2) {
-        tableStackedWidget->setCurrentWidget(resultsTableMainTask);  // Показываем таблицу для основной задачи 2
-        additionalParam1->setVisible(true); // Показываем дополнительные параметры
+        tableStackedWidget->setCurrentWidget(resultsTableMainTask);
+        phasePortraitPlot->setVisible(true);   // Показываем фазовый портрет
+        additionalParam1->setVisible(true);
         additionalParam2->setVisible(true);
     }
 }
 
+bool MainWindow::validateInput(int index) {
+    bool ok;
+
+    // Validate Nmax as positive integer
+    int nMax = nMaxInput->text().toInt(&ok);
+    if (!ok || nMax <= 0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a positive integer for Nmax.");
+        return false;
+    }
+
+    // Validate epsilon as positive double
+    double epsilon = epsilonInput->text().toDouble(&ok);
+    if (!ok || epsilon <= 0.0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Epsilon.");
+        return false;
+    }
+
+    // Validate boundary precision as positive double
+    double boundaryPrecision = boundaryPrecisionInput->text().toDouble(&ok);
+    if (!ok || boundaryPrecision <= 0.0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Boundary Precision.");
+        return false;
+    }
+
+    // Validate initial step as positive double
+    double initialStep = initialStepInput->text().toDouble(&ok);
+    if (!ok || initialStep <= 0.0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Initial Step.");
+        return false;
+    }
+
+    // Validate right border as positive integer
+    int rightBorder = rightborder->text().toInt(&ok);
+    if (!ok || rightBorder <= 0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a positive integer for Right Border.");
+        return false;
+    }
+    if (index ==2){
+        // Additional parameters as doubles
+        double param1 = additionalParam1->text().toDouble(&ok);
+        if (!ok) {
+            QMessageBox::warning(this, "Invalid Input", "Please enter a valid number for Additional Parameter 1.");
+            return false;
+        }
+
+        double param2 = additionalParam2->text().toDouble(&ok);
+        if (!ok) {
+            QMessageBox::warning(this, "Invalid Input", "Please enter a valid number for Additional Parameter 2.");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
 void MainWindow::startCalculation() {
+
     // Создание объекта для хранения параметров задачи
     TaskParameters params;
     params.taskType = taskComboBox->currentText();
@@ -210,6 +281,9 @@ void MainWindow::startCalculation() {
         params.additionalParam1 = additionalParam1->text().toDouble(); // Если у вас есть соответствующие поля в структуре
         params.additionalParam2 = additionalParam2->text().toDouble(); // Если у вас есть соответствующие поля в структуре
     }
+    if (!validateInput(params.taskTypeInd)) {
+        return;
+    }
     // Пример вывода параметров для отладки
     outputTextEdit->clear();
     outputTextEdit->append("Запуск расчетов...");
@@ -222,16 +296,39 @@ void MainWindow::startCalculation() {
     //ошибка
     if(data._type == -1) return;
 
+    // Построение графиков
+    customPlot->clearGraphs();
+
+    // Настройка графика для численного решения
     customPlot->addGraph();
     customPlot->graph(0)->setData(data.xData, data.numericalSolutionData);
+    customPlot->graph(0)->setPen(QPen(Qt::blue));
+    customPlot->graph(0)->setName("Численное решение");
 
+    // Настройка графика для истинного решения
     customPlot->addGraph();
     customPlot->graph(1)->setData(data.xData, data.trueSolutionData);
+    customPlot->graph(1)->setPen(QPen(Qt::red));
+    customPlot->graph(1)->setName("Истинное решение");
 
+    // Определение минимальных и максимальных значений для осей
+    double xMin = *std::min_element(data.xData.begin(), data.xData.end());
+    double xMax = *std::max_element(data.xData.begin(), data.xData.end());
+    double yMin = std::min(*std::min_element(data.numericalSolutionData.begin(), data.numericalSolutionData.end()),
+                           *std::min_element(data.trueSolutionData.begin(), data.trueSolutionData.end()));
+    double yMax = std::max(*std::max_element(data.numericalSolutionData.begin(), data.numericalSolutionData.end()),
+                           *std::max_element(data.trueSolutionData.begin(), data.trueSolutionData.end()));
+
+    // Установка диапазона осей с небольшим отступом
+    double offset = 0.1; // Отступ, который вы можете настроить
+    customPlot->xAxis->setRange(xMin - offset, xMax + offset);
+    customPlot->yAxis->setRange(yMin - offset, yMax + offset);
+
+    // Отображение легенды
+    customPlot->legend->setVisible(true);
+
+    // Обновление графика для отображения изменений
     customPlot->replot();
+
 }
 
-void MainWindow::stopCalculation() {
-    // Логика остановки расчётов
-    outputTextEdit->append("Расчеты остановлены.");
-}

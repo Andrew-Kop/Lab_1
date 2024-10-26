@@ -15,7 +15,6 @@ public:
     bool error_rate; // C учётом локальной погрешности и без
     int rightborder; // Правая граница
     double additionalParam1, additionalParam2; //Дополнительные параметры
-    TaskParameters() {}
 
     // Функция для вывода данных (например, для отладки)
     QString toString() const {
