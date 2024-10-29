@@ -287,7 +287,6 @@ void MainWindow::startCalculation() {
     // Пример вывода параметров для отладки
     outputTextEdit->clear();
     outputTextEdit->append("Запуск расчетов...");
-    outputTextEdit->append(params.toString());  // Используем объект для вывода
 
     // Здесь можно вызвать функции для вычислений, передав объект params
     TaskManager manager(&params);
@@ -298,6 +297,26 @@ void MainWindow::startCalculation() {
         QMessageBox::warning(this, "Error", data.errMsg);
         return;
     }
+
+    // Вывод справки
+    QString info = QString("Шагов: %1\nЧисло делений: %2\nЧисло удвоений: %3\nМаксимальный шаг: %4\nМинимальный шаг: %5")
+        .arg(data.xi.length())
+        .arg(data.c1.back())
+        .arg(data.c2.back())
+        .arg(*std::max_element(data.hi.begin(), data.hi.end()))
+        .arg(*std::min_element(data.hi.begin(), data.hi.end()));
+
+    if (params.taskTypeInd == 0) {
+        auto it = std::max_element(data.diff_ui_vi.begin(), data.diff_ui_vi.end());
+        info.append(QString("\nМаксимальная ошибка: %6, при x = %7")
+            .arg(*it)
+            .arg(std::distance(data.diff_ui_vi.begin(), it)));
+    }
+    info.append("\n\n");
+
+    outputTextEdit->append(info);
+    outputTextEdit->append("Информация для отладки:");
+    outputTextEdit->append(params.toString());  // Используем объект для вывода
 
     // Построение графиков
     customPlot->clearGraphs();
@@ -353,10 +372,10 @@ void MainWindow::startCalculation() {
         for (int row = 0; row < data.xi.length(); ++row) {
             // Заполняем ячейки
             currentRowData = {
-                QString::number(row + 1), // i
+                QString::number(row), // i
                 QString::number(data.xi.at(row)), // xi
                 QString::number(data.vi.at(row)), // vi
-                QString::number(data.vi.at(row) - data.diff_vi_v2i.at(row)), // v2i
+                QString::number(data.resultSteps2.at(row)), // v2i
                 QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
                 QString::number(data.olp.at(row)), // olp
                 QString::number(data.hi.at(row)), // hi
@@ -382,10 +401,10 @@ void MainWindow::startCalculation() {
         for (int row = 0; row < data.xi.length(); ++row) {
             // Заполняем ячейки
             currentRowData = {
-                QString::number(row + 1), // i
+                QString::number(row), // i
                 QString::number(data.xi.at(row)), // xi
                 QString::number(data.vi.at(row)), // vi
-                QString::number(data.vi.at(row) - data.diff_vi_v2i.at(row)), // v2i
+                QString::number(data.resultSteps2.at(row)), // v2i
                 QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
                 QString::number(data.olp.at(row)), // olp
                 QString::number(data.hi.at(row)), // hi
