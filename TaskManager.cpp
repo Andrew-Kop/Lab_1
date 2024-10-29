@@ -1,28 +1,22 @@
 #include "TaskManager.h"
-#include "rk4.h"
+#include "table_rk4.h"
 
 void TaskManager::setParams(TaskParameters* settings) {
     params = settings;
     isСonfigured = true;
+    toSend = nullptr;
 }
 
 TaskManager::TaskManager(TaskParameters* settings) {
     isСonfigured = true;
     params = settings;
-    toSend = DataTransferObj();
+    toSend = nullptr;
 }
 
 TaskManager::TaskManager() {
     isСonfigured = false;
     params = nullptr;
-    toSend = DataTransferObj();
-}
-
-void TaskManager::parseSolution(const std::vector<std::vector<double>>& numSol) {
-    for (unsigned long long i = 0; i < numSol.size(); i++) {
-        toSend.xData.append(numSol.at(i).at(0));
-        toSend.numericalSolutionData.append(numSol.at(i).at(1));
-    }
+    toSend = nullptr;
 }
 
 QList<double> TaskManager::parseInitialValues() {
@@ -40,39 +34,60 @@ QList<double> TaskManager::parseInitialValues() {
 
 DataTransferObj& TaskManager::getSolution() {
     if (!isСonfigured) {
-        toSend._type = -1;
-        toSend.errMsg = "The initial values ​​are not initialized!";
-        return toSend;
+        toSend->_type = -1;
+        toSend->errMsg = "The initial values ​​are not initialized!";
+        return *toSend;
     }
 
     QList<double> dArgs = parseInitialValues();
 
-    if (dArgs.length() != 3) {
-        toSend._type = -1;
-        toSend.errMsg = "The initial values ​​are not initialized!";
-        return toSend;
+    if (dArgs.length() != 2) {
+        toSend->_type = -1;
+        toSend->errMsg = "The initial values ​​are not initialized!";
+        return *toSend;
     }
 
+    bool isValid = true;
     switch(params->taskTypeInd) {
     case 0:
-        parseSolution(numericalSolutionWithControl(
-            dArgs.at(0), dArgs.at(1), params->initialStep, testFuncDu, dArgs.at(2),
-            params->nMax, params->epsilon, params->boundaryPrecision));
-        toSend.trueSolutionData = getTrueSolution(toSend.xData, testUTrue);
-        return toSend;
+        toSend = new TableRK4test();
         break;
-
     case 1:
+        toSend = new TableRK4_1task();
         break;
-
     case 2:
+
         break;
 
     default:
+        isValid = false;
         break;
     }
 
-    toSend._type = -1;
-    toSend.errMsg = "Unknown task type!";
-    return toSend;
+    if (!isValid) {
+        toSend->_type = -1;
+        toSend->errMsg = "Unknown task type!";
+        return *toSend;
+    }
+
+    if (params->error_rate) {
+        toSend->solveWithControl(
+            dArgs.at(0), dArgs.at(1),
+            params->initialStep,
+            params->rightborder,
+            params->nMax,
+            params->epsilon,
+            params->boundaryPrecision
+            );
+    } else {
+        toSend->solveWithoutControl(
+            dArgs.at(0), dArgs.at(1),
+            params->initialStep,
+            params->rightborder,
+            params->nMax,
+            params->boundaryPrecision
+            );
+    }
+
+    return *toSend;
 }
