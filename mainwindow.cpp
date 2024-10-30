@@ -274,7 +274,7 @@ void MainWindow::startCalculation() {
     params.boundaryPrecision = boundaryPrecisionInput->text().toDouble();
     params.initialStep = initialStepInput->text().toDouble();
     params.taskTypeInd = taskComboBox->currentIndex();
-    params.rightborder = rightborder->text().toInt();
+    params.rightborder = rightborder->text().toDouble();
     params.error_rate = check_of_error_rate->isChecked();
 
     if (params.taskTypeInd == 2) { // Убедитесь, что это основная задача 2
@@ -287,37 +287,77 @@ void MainWindow::startCalculation() {
     // Пример вывода параметров для отладки
     outputTextEdit->clear();
     outputTextEdit->append("Запуск расчетов...");
-    outputTextEdit->append(params.toString());  // Используем объект для вывода
 
     // Здесь можно вызвать функции для вычислений, передав объект params
     TaskManager manager(&params);
     DataTransferObj data = manager.getSolution();
 
     //ошибка
-    if(data._type == -1) return;
+    if(data._type == -1) {
+        QMessageBox::warning(this, "Error", data.errMsg);
+        return;
+    }
+
+    // Вывод справки
+    auto itMax = std::max_element(data.hi.begin(), data.hi.end());
+    auto itMin = std::min_element(data.hi.begin(), data.hi.end());
+    QString info = QString("Шагов: %1\nЧисло делений: %2\nЧисло удвоений: %3"
+                           "\nМаксимальный шаг: %4, при x = %5\nМинимальный шаг: %6, при x = %7"
+                           "\nМаксимальное значение ОЛП: %8\nРазница между последней точкой и границей: %9")
+        .arg(data.xi.length())
+        .arg(data.c1.back())
+        .arg(data.c2.back())
+        .arg(*itMax)
+        .arg(data.xi.at(std::distance(data.hi.begin(), itMax)))
+        .arg(*itMin)
+        .arg(data.xi.at(std::distance(data.hi.begin(), itMin)))
+        .arg(*std::max_element(data.olp.begin(), data.olp.end()))
+        .arg(params.rightborder - data.xi.back());
+
+    if (params.taskTypeInd == 0) {
+        auto it = std::max_element(data.diff_ui_vi.begin(), data.diff_ui_vi.end());
+        info.append(QString("\nМаксимальная ошибка: %10, при x = %11")
+            .arg(*it)
+            .arg(data.xi.at(std::distance(data.diff_ui_vi.begin(), it))));
+    }
+    info.append("\n\n");
+
+    outputTextEdit->append(info);
+    outputTextEdit->append("Информация для отладки:");
+    outputTextEdit->append(params.toString());  // Используем объект для вывода
 
     // Построение графиков
     customPlot->clearGraphs();
 
     // Настройка графика для численного решения
     customPlot->addGraph();
-    customPlot->graph(0)->setData(data.xData, data.numericalSolutionData);
+    customPlot->graph(0)->setData(data.xi, data.vi);
     customPlot->graph(0)->setPen(QPen(Qt::blue));
     customPlot->graph(0)->setName("Численное решение");
 
     // Настройка графика для истинного решения
-    customPlot->addGraph();
-    customPlot->graph(1)->setData(data.xData, data.trueSolutionData);
-    customPlot->graph(1)->setPen(QPen(Qt::red));
-    customPlot->graph(1)->setName("Истинное решение");
+    if (params.taskTypeInd == 0) {
+        customPlot->addGraph();
+        customPlot->graph(1)->setData(data.xi, data.ui);
+        customPlot->graph(1)->setPen(QPen(Qt::red));
+        customPlot->graph(1)->setName("Истинное решение");
+    }
 
     // Определение минимальных и максимальных значений для осей
-    double xMin = *std::min_element(data.xData.begin(), data.xData.end());
-    double xMax = *std::max_element(data.xData.begin(), data.xData.end());
-    double yMin = std::min(*std::min_element(data.numericalSolutionData.begin(), data.numericalSolutionData.end()),
-                           *std::min_element(data.trueSolutionData.begin(), data.trueSolutionData.end()));
-    double yMax = std::max(*std::max_element(data.numericalSolutionData.begin(), data.numericalSolutionData.end()),
-                           *std::max_element(data.trueSolutionData.begin(), data.trueSolutionData.end()));
+    double xMin = *std::min_element(data.xi.begin(), data.xi.end());
+    double xMax = *std::max_element(data.xi.begin(), data.xi.end());
+    double yMin;
+    double yMax;
+
+    if (params.taskTypeInd == 0) {
+        yMin = std::min(*std::min_element(data.vi.begin(), data.vi.end()),
+                               *std::min_element(data.ui.begin(), data.ui.end()));
+        yMax = std::max(*std::max_element(data.vi.begin(), data.vi.end()),
+                               *std::max_element(data.ui.begin(), data.ui.end()));
+    } else {
+        yMin = *std::min_element(data.vi.begin(), data.vi.end());
+        yMax = *std::max_element(data.vi.begin(), data.vi.end());
+    }
 
     // Установка диапазона осей с небольшим отступом
     double offset = 0.1; // Отступ, который вы можете настроить
@@ -329,6 +369,64 @@ void MainWindow::startCalculation() {
 
     // Обновление графика для отображения изменений
     customPlot->replot();
+
+    // Заполнение таблицы
+    QStringList currentRowData;
+    switch (params.taskTypeInd) {
+    case 0:
+        resultsTableTestTask->clearContents();
+        resultsTableTestTask->setRowCount(data.xi.length());
+
+        for (int row = 0; row < data.xi.length(); ++row) {
+            // Заполняем ячейки
+            currentRowData = {
+                QString::number(row), // i
+                QString::number(data.xi.at(row)), // xi
+                QString::number(data.vi.at(row)), // vi
+                QString::number(data.resultSteps2.at(row)), // v2i
+                QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
+                QString::number(data.olp.at(row)), // olp
+                QString::number(data.hi.at(row)), // hi
+                QString::number(data.c1.at(row)), // c1
+                QString::number(data.c2.at(row)), // c2
+                QString::number(data.ui.at(row)), // ui
+                QString::number(data.diff_ui_vi.at(row)), // |ui-vi|
+                };
+
+            for (int col = 0; col < currentRowData.size(); col++) {
+                resultsTableTestTask->setItem(row, col, new QTableWidgetItem(currentRowData.at(col)));
+            }
+        }
+
+        break;
+
+    // надо будет поменять под таблицы для второй основной
+    case 1:
+    case 2:
+        resultsTableMainTask->clearContents();
+        resultsTableMainTask->setRowCount(data.xi.length());
+
+        for (int row = 0; row < data.xi.length(); ++row) {
+            // Заполняем ячейки
+            currentRowData = {
+                QString::number(row), // i
+                QString::number(data.xi.at(row)), // xi
+                QString::number(data.vi.at(row)), // vi
+                QString::number(data.resultSteps2.at(row)), // v2i
+                QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
+                QString::number(data.olp.at(row)), // olp
+                QString::number(data.hi.at(row)), // hi
+                QString::number(data.c1.at(row)), // c1
+                QString::number(data.c2.at(row)), // c2
+            };
+
+            for (int col = 0; col < currentRowData.size(); col++) {
+                resultsTableMainTask->setItem(row, col, new QTableWidgetItem(currentRowData.at(col)));
+            }
+        }
+
+        break;
+    }
 
 }
 

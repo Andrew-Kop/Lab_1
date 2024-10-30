@@ -6,16 +6,15 @@
 #include <QString>
 #include <QStringList>
 #include <QList>
-#include <vector>
 
 class TaskManager {
 private:
-    DataTransferObj toSend;
+    DataTransferObj* toSend;
     TaskParameters* params;
     bool isСonfigured;
 
-    void parseSolution(const std::vector<std::vector<double>>& numSol);
     QList<double> parseInitialValues();
+    void execute(const QList<double>& args);
 
 public:
     TaskManager();
@@ -23,6 +22,8 @@ public:
 
     void setParams(TaskParameters* settings);
     DataTransferObj& getSolution();
+
+    ~TaskManager() {delete toSend;}
 };
 
 #endif // TASKMANAGER_H

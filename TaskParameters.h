@@ -13,7 +13,7 @@ public:
     double initialStep;         // Начальный шаг
     int taskTypeInd; // Индекс задачи (0 - тестовая, 1 - основная №1, 2 - основная #2)
     bool error_rate; // C учётом локальной погрешности и без
-    int rightborder; // Правая граница
+    double rightborder; // Правая граница
     double additionalParam1, additionalParam2; //Дополнительные параметры
 
     // Функция для вывода данных (например, для отладки)

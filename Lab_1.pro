@@ -20,7 +20,10 @@ HEADERS += \
     TaskParameters.h \
     mainwindow.h \
     qcustomplot.h \
-    rk4.h
+    rk4.h \
+    table_rk4.h \
+    rk4_system.h \
+    table_rk4_system.h
 
 FORMS += \
     mainwindow.ui
