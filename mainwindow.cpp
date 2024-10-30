@@ -299,18 +299,26 @@ void MainWindow::startCalculation() {
     }
 
     // Вывод справки
-    QString info = QString("Шагов: %1\nЧисло делений: %2\nЧисло удвоений: %3\nМаксимальный шаг: %4\nМинимальный шаг: %5")
+    auto itMax = std::max_element(data.hi.begin(), data.hi.end());
+    auto itMin = std::min_element(data.hi.begin(), data.hi.end());
+    QString info = QString("Шагов: %1\nЧисло делений: %2\nЧисло удвоений: %3"
+                           "\nМаксимальный шаг: %4, при x = %5\nМинимальный шаг: %6, при x = %7"
+                           "\nМаксимальное значение ОЛП: %8\nРазница между последней точкой и границей: %9")
         .arg(data.xi.length())
         .arg(data.c1.back())
         .arg(data.c2.back())
-        .arg(*std::max_element(data.hi.begin(), data.hi.end()))
-        .arg(*std::min_element(data.hi.begin(), data.hi.end()));
+        .arg(*itMax)
+        .arg(data.xi.at(std::distance(data.hi.begin(), itMax)))
+        .arg(*itMin)
+        .arg(data.xi.at(std::distance(data.hi.begin(), itMin)))
+        .arg(*std::max_element(data.olp.begin(), data.olp.end()))
+        .arg(params.rightborder - data.xi.back());
 
     if (params.taskTypeInd == 0) {
         auto it = std::max_element(data.diff_ui_vi.begin(), data.diff_ui_vi.end());
-        info.append(QString("\nМаксимальная ошибка: %6, при x = %7")
+        info.append(QString("\nМаксимальная ошибка: %10, при x = %11")
             .arg(*it)
-            .arg(std::distance(data.diff_ui_vi.begin(), it)));
+            .arg(data.xi.at(std::distance(data.diff_ui_vi.begin(), it))));
     }
     info.append("\n\n");
 
