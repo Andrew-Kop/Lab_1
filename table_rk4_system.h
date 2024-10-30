@@ -4,6 +4,7 @@
 #include <list>
 #include "rk4_system.h"
 #include "DataTransferObj.h"
+#include <QList>
 using std::vector;
 using std::pair;
 using std::list;
@@ -14,8 +15,15 @@ class TableRK4_2task : public DataTransferObj
 {
    
 public:
-    void solveWithoutControl(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax, double Egr = 0.001)
+    void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
     {
+
+        double x0 = initVals[0];
+        double u01 = initVals[1];
+        double u02 = initVals[2];
+
+        system_du system = system_du(initVals[3], initVals[4]);
+
         xi.clear();
         vi.clear();
         diff_vi_v2i.clear();
@@ -88,8 +96,15 @@ public:
         }
     }
 
-    void solveWithControl(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax, double E, double Egr = 0.001)
+    void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
+
+        double x0 = initVals[0];
+        double u01 = initVals[1];
+        double u02 = initVals[2];
+
+        system_du system = system_du(initVals[3], initVals[4]);
+
         xi.clear();
         vi.clear();
         diff_vi_v2i.clear();
@@ -152,14 +167,15 @@ public:
             }
             else if (finalResult.back()[0] > B)
             {
+
+                finalResult.pop_back();
+
                 xi.pop_back();
                 vi.pop_back();
                 resultSteps2.pop_back();
                 diff_vi_v2i.pop_back();
                 olp.pop_back();
                 hi.pop_back();
-
-
 
                 double h1 = B - finalResult.back()[0] - Egr;
 
@@ -170,6 +186,8 @@ public:
                 double S1 = (result_2_halfTurn[1] - result_simpleTurn[1]) / (pow(2, 4) - 1);
                 double S2 = (result_2_halfTurn[2] - result_simpleTurn[2]) / (pow(2, 4) - 1);
                 double S = std::max(fabs(S1), fabs(S2)); //норма вектора S
+
+                finalResult.push_back(result_simpleTurn);
 
                 xi.push_back(finalResult.back()[0]);
                 vi.push_back(finalResult.back()[2]);

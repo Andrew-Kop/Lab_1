@@ -38,8 +38,12 @@ private:
     
 public:
 
-    void solveWithoutControl(double x0, double u0, double h0, double B, int Hmax, double Egr = 0.001) override
+    void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
 	{
+
+        double x0 = initVals[0];
+        double u0 = initVals[1];
+
         xi.clear();
         vi.clear();
         resultSteps2.clear();
@@ -116,8 +120,12 @@ public:
         vi.pop_front();
 	}
 
-    void solveWithControl(double x0, double u0, double h0, double B, int Hmax, double E, double Egr = 0.001) override
+    void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
+
+        double x0 = initVals[0];
+        double u0 = initVals[1];
+
         xi.clear();
         vi.clear();
         resultSteps2.clear();
@@ -235,8 +243,12 @@ private:
 
 public:
 
-    void solveWithoutControl(double x0, double u0, double h0, double B, int Hmax, double Egr = 0.001) override
+    void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
     {
+
+        double x0 = initVals[0];
+        double u0 = initVals[1];
+
         xi.clear();
         vi.clear();
         resultSteps2.clear();
@@ -306,8 +318,12 @@ public:
         vi.pop_front();
     }
 
-    void solveWithControl(double x0, double u0, double h0, double B, int Hmax, double E, double Egr = 0.001) override
+    void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
+
+        double x0 = initVals[0];
+        double u0 = initVals[1];
+
         xi.clear();
         vi.clear();
         resultSteps2.clear();

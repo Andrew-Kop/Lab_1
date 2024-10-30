@@ -34,8 +34,8 @@ public:
         diff_ui_vi()
     {}
 
-    virtual void solveWithoutControl(double x0, double u0, double h0, double B, int Hmax, double Egr) {}
-    virtual void solveWithControl(double x0, double u0, double h0, double B, int Hmax, double E, double Egr) {}
+    virtual void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr) {}
+    virtual void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr) {}
 
     virtual ~DataTransferObj() {}
 
