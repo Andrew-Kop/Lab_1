@@ -1,5 +1,7 @@
 #include "TaskManager.h"
 #include "table_rk4.h"
+#include "table_rk4_system.h"
+#include "rk4_system.h"
 
 void TaskManager::setParams(TaskParameters* settings) {
     params = settings;
@@ -10,7 +12,7 @@ void TaskManager::setParams(TaskParameters* settings) {
 TaskManager::TaskManager(TaskParameters* settings) {
     isСonfigured = true;
     params = settings;
-    toSend = nullptr;
+    toSend = new DataTransferObj();
 }
 
 TaskManager::TaskManager() {
@@ -41,7 +43,7 @@ DataTransferObj& TaskManager::getSolution() {
 
     QList<double> dArgs = parseInitialValues();
 
-    if (dArgs.length() != 2) {
+    if ((dArgs.length() != 3 && params->taskTypeInd == 2) || dArgs.length() < 2) {
         toSend->_type = -1;
         toSend->errMsg = "The initial values ​​are not initialized!";
         return *toSend;
@@ -56,7 +58,6 @@ DataTransferObj& TaskManager::getSolution() {
         toSend = new TableRK4_1task();
         break;
     case 2:
-
         break;
 
     default:
@@ -70,24 +71,57 @@ DataTransferObj& TaskManager::getSolution() {
         return *toSend;
     }
 
-    if (params->error_rate) {
-        toSend->solveWithControl(
-            dArgs.at(0), dArgs.at(1),
-            params->initialStep,
-            params->rightborder,
-            params->nMax,
-            params->epsilon,
-            params->boundaryPrecision
-            );
-    } else {
-        toSend->solveWithoutControl(
-            dArgs.at(0), dArgs.at(1),
-            params->initialStep,
-            params->rightborder,
-            params->nMax,
-            params->boundaryPrecision
-            );
-    }
-
+    execute(dArgs);
     return *toSend;
+}
+
+void TaskManager::execute(const QList<double>& args) {
+    if (params->taskTypeInd != 2) {
+        if (params->error_rate) {
+            toSend->solveWithControl(
+                args.at(0), args.at(1),
+                params->initialStep,
+                params->rightborder,
+                params->nMax,
+                params->epsilon,
+                params->boundaryPrecision
+                );
+        } else {
+            toSend->solveWithoutControl(
+                args.at(0), args.at(1),
+                params->initialStep,
+                params->rightborder,
+                params->nMax,
+                params->boundaryPrecision
+                );
+        }
+    } else {
+        auto sys = system_du(params->additionalParam1, params->additionalParam2);
+        auto tmp = TableRK4_2task();
+        if (params->error_rate) {
+            tmp.solveWithControl(
+                args.at(0),
+                args.at(1),
+                args.at(2),
+                params->initialStep,
+                sys,
+                params->rightborder,
+                params->nMax,
+                params->epsilon,
+                params->boundaryPrecision
+            );
+        } else {
+            tmp.solveWithoutControl(
+                args.at(0),
+                args.at(1),
+                args.at(2),
+                params->initialStep,
+                sys,
+                params->rightborder,
+                params->nMax,
+                params->boundaryPrecision
+            );
+        }
+        toSend = new DataTransferObj(tmp);
+    }
 }

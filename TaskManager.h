@@ -14,6 +14,7 @@ private:
     bool isСonfigured;
 
     QList<double> parseInitialValues();
+    void execute(const QList<double>& args);
 
 public:
     TaskManager();

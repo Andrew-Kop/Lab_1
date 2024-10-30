@@ -39,6 +39,23 @@ public:
 
     virtual ~DataTransferObj() {}
 
+    DataTransferObj& operator=(const DataTransferObj& obj) {
+        if (this == &obj) return *this;
+        this->_type = obj._type;
+        this->c1 = obj.c1;
+        this->c2 = obj.c2;
+        this->diff_ui_vi = obj.diff_ui_vi;
+        this->diff_vi_v2i = obj.diff_vi_v2i;
+        this->errMsg = obj.errMsg;
+        this->hi = obj.hi;
+        this->olp = obj.olp;
+        this->resultSteps2 = obj.resultSteps2;
+        this->ui = obj.ui;
+        this->vi = obj.vi;
+        this->xi = obj.xi;
+        return *this;
+    }
+
 };
 
 #endif // DATATRANSFEROBJ_H
