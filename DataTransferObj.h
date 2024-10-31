@@ -18,6 +18,7 @@ public:
     QVector<double> c2; //c2
     QVector<double> ui; //ui
     QVector<double> diff_ui_vi; // |ui - vi|
+    QVector<double> firstDer; // первая производная
 
     DataTransferObj(int type = 0, QString err = ""):
         _type(type),
@@ -31,7 +32,8 @@ public:
         c1(),
         c2(),
         ui(),
-        diff_ui_vi()
+        diff_ui_vi(),
+        firstDer()
     {}
 
     virtual void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr) {}
@@ -53,6 +55,7 @@ public:
         this->ui = obj.ui;
         this->vi = obj.vi;
         this->xi = obj.xi;
+        this->firstDer = obj.firstDer;
         return *this;
     }
 
