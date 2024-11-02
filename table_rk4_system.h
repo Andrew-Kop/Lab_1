@@ -26,6 +26,7 @@ public:
 
         xi.clear();
         vi.clear();
+        firstDer.clear();
         diff_vi_v2i.clear();
         resultSteps2.clear();
         olp.clear();
@@ -49,15 +50,14 @@ public:
             finalResult.push_back(result_simpleTurn); //добавляем элемент (Xn, V1n, V2n) в лист численной траектории
 
             xi.push_back(finalResult.back()[0]);
-            vi.push_back(finalResult.back()[2]);
+            vi.push_back(finalResult.back()[1]);
+            firstDer.push_back(finalResult.back()[2]);
             resultSteps2.push_back(result_2_halfTurn[2]);
             diff_vi_v2i.push_back(result_2_halfTurn[2] - result_simpleTurn[2]);
             olp.push_back(S2 * pow(2, 4));
             hi.push_back(h0);
             c1.push_back(0);
             c2.push_back(0);
-
-
 
             //Проверяем выход за границу(в видосе так сказано делать)
             if (finalResult.back()[0] >= (B - Egr) && finalResult.back()[0] <= B)
@@ -68,12 +68,11 @@ public:
             {
                 xi.pop_back();
                 vi.pop_back();
+                firstDer.pop_back();
                 resultSteps2.pop_back();
                 diff_vi_v2i.pop_back();
                 olp.pop_back();
                 hi.pop_back();
-
-
 
                 double h1 = B - finalResult.back()[0] - Egr;
 
@@ -86,7 +85,8 @@ public:
                 double S = std::max(fabs(S1), fabs(S2)); //норма вектора S
 
                 xi.push_back(finalResult.back()[0]);
-                vi.push_back(finalResult.back()[2]);
+                vi.push_back(finalResult.back()[1]);
+                firstDer.push_back(finalResult.back()[2]);
                 resultSteps2.push_back(result_2_halfTurn[2]);
                 diff_vi_v2i.push_back(result_2_halfTurn[2] - result_simpleTurn[2]);
                 olp.push_back(S2 * pow(2, 4));
@@ -105,8 +105,9 @@ public:
 
         system_du system = system_du(initVals[3], initVals[4]);
 
-        xi.clear();
         vi.clear();
+        xi.clear();
+        firstDer.clear();
         diff_vi_v2i.clear();
         resultSteps2.clear();
         olp.clear();
@@ -150,7 +151,8 @@ public:
             finalResult.push_back(result_simpleTurn); //добавляем элемент (Xn, V1n, V2n) в лист численной траектории
 
             xi.push_back(finalResult.back()[0]);
-            vi.push_back(finalResult.back()[2]);
+            vi.push_back(finalResult.back()[1]);
+            firstDer.push_back(finalResult.back()[2]);
             resultSteps2.push_back(result_2_halfTurn[2]);
             diff_vi_v2i.push_back(result_2_halfTurn[2] - result_simpleTurn[2]);
             olp.push_back(S2 * pow(2, 4));
@@ -172,6 +174,7 @@ public:
 
                 xi.pop_back();
                 vi.pop_back();
+                firstDer.pop_back();
                 resultSteps2.pop_back();
                 diff_vi_v2i.pop_back();
                 olp.pop_back();
@@ -190,7 +193,8 @@ public:
                 finalResult.push_back(result_simpleTurn);
 
                 xi.push_back(finalResult.back()[0]);
-                vi.push_back(finalResult.back()[2]);
+                vi.push_back(finalResult.back()[1]);
+                firstDer.push_back(finalResult.back()[2]);
                 resultSteps2.push_back(result_2_halfTurn[2]);
                 diff_vi_v2i.push_back(result_2_halfTurn[2] - result_simpleTurn[2]);
                 olp.push_back(S2 * pow(2, 4));

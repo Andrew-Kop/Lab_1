@@ -328,6 +328,7 @@ void MainWindow::startCalculation() {
 
     // Построение графиков
     customPlot->clearGraphs();
+    phasePortraitPlot->clearGraphs();
 
     // Настройка графика для численного решения
     customPlot->addGraph();
@@ -341,6 +342,18 @@ void MainWindow::startCalculation() {
         customPlot->graph(1)->setData(data.xi, data.ui);
         customPlot->graph(1)->setPen(QPen(Qt::red));
         customPlot->graph(1)->setName("Истинное решение");
+    }
+
+    if (params.taskTypeInd == 2) {
+        customPlot->addGraph();
+        customPlot->graph(1)->setData(data.xi, data.firstDer);
+        customPlot->graph(1)->setPen(QPen(Qt::red));
+        customPlot->graph(1)->setName("Первая производная");
+
+        phasePortraitPlot->addGraph();
+        phasePortraitPlot->graph(0)->setData(data.vi, data.firstDer);
+        phasePortraitPlot->graph(0)->setPen(QPen(Qt::blue));
+        phasePortraitPlot->graph(0)->setName("(v, v')");
     }
 
     // Определение минимальных и максимальных значений для осей
@@ -369,6 +382,10 @@ void MainWindow::startCalculation() {
 
     // Обновление графика для отображения изменений
     customPlot->replot();
+    if (params.taskTypeInd == 2) {
+        phasePortraitPlot->legend->setVisible(true);
+        phasePortraitPlot->replot();
+    }
 
     // Заполнение таблицы
     QStringList currentRowData;
