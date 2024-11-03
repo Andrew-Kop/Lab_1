@@ -4,6 +4,7 @@
 #include <QDir>
 #include "TaskParameters.h"
 #include "TaskManager.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -292,6 +293,17 @@ void MainWindow::startCalculation() {
     TaskManager manager(&params);
     DataTransferObj data = manager.getSolution();
 
+    std::cout << "\nFinal vi values:\n";
+    for (size_t j = 0; j < data.vi.size(); ++j) {
+        std::cout << "vi[" << j << "]: " << data.vi[j] << "\n";
+    }
+
+    std::cout << "\nFinal firstDer values:\n";
+    for (size_t j = 0; j < data.firstDer.size(); ++j) {
+        std::cout << "firstDer[" << j << "]: " << data.firstDer[j] << "\n";
+    }
+
+
     //ошибка
     if(data._type == -1) {
         QMessageBox::warning(this, "Error", data.errMsg);
@@ -354,6 +366,7 @@ void MainWindow::startCalculation() {
         phasePortraitPlot->graph(0)->setData(data.vi, data.firstDer);
         phasePortraitPlot->graph(0)->setPen(QPen(Qt::blue));
         phasePortraitPlot->graph(0)->setName("(v, v')");
+
     }
 
     // Определение минимальных и максимальных значений для осей
@@ -376,6 +389,15 @@ void MainWindow::startCalculation() {
     double offset = 0.1; // Отступ, который вы можете настроить
     customPlot->xAxis->setRange(xMin - offset, xMax + offset);
     customPlot->yAxis->setRange(yMin - offset, yMax + offset);
+
+    double xMin_1 = *std::min_element(data.vi.begin(), data.vi.end());
+    double xMax_1 = *std::max_element(data.vi.begin(), data.vi.end());
+    double yMin_1 = *std::min_element(data.firstDer.begin(), data.firstDer.end());
+    double yMax_1 = *std::max_element(data.firstDer.begin(), data.firstDer.end());
+
+    // Установка диапазона осей с небольшим отступом
+    phasePortraitPlot->xAxis->setRange(xMin_1 - offset, xMax_1 + offset);
+    phasePortraitPlot->yAxis->setRange(yMin_1 - offset, yMax_1 + offset);
 
     // Отображение легенды
     customPlot->legend->setVisible(true);
