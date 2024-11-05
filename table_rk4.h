@@ -154,6 +154,7 @@ public:
             double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
 
             //выбираем что делать дальше
+            double h0 = H;
             if (fabs(S) < (E / pow(2, 5))) //значение слишком точное, принимаем и удваиваем шаг
             {
                 H = H * 2;
@@ -172,7 +173,7 @@ public:
             resultSteps2.push_back(result_2_halfTurn.second);
             diff_vi_v2i.push_back(result_2_halfTurn.second - result_simpleTurn.second);
             olp.push_back(S * pow(2, 4));
-            hi.push_back(H);
+            hi.push_back(h0);
             c1.push_back(c1count);
             c2.push_back(c2count);
             ui.push_back(uTestRed(result_simpleTurn.first, x0, u0));
@@ -350,6 +351,7 @@ public:
             double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
 
             //выбираем что делать дальше
+            double h0 = H;
             if (fabs(S) < (E / pow(2, 5))) //значение слишком точное, принимаем и удваиваем шаг
             {
                 H = H * 2;
@@ -368,7 +370,7 @@ public:
             resultSteps2.push_back(result_2_halfTurn.second);
             diff_vi_v2i.push_back(result_2_halfTurn.second - result_simpleTurn.second);
             olp.push_back(S * pow(2, 4));
-            hi.push_back(H);
+            hi.push_back(h0);
             c1.push_back(c1count);
             c2.push_back(c2count);
             
