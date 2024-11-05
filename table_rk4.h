@@ -4,38 +4,14 @@
 #include <list>
 #include "rk4.h"
 #include "DataTransferObj.h"
+#include "functions.h"
 using std::vector;
 using std::pair;
 using std::list;
 
-double uTestRed(double x1, double x0, double u0)
-{
-    double c = u0 / std::exp((-7.0 / 2) * x0);
-    return c*std::exp((-7.0 / 2) * x1);
-}
-
-double func1Du(double x0, double v0)
-{
-    return pow(v0, 2) / (1 + 3 * x0 + pow(x0, 2)) + v0 - pow(v0, 3) * sin(10 * x0);
-}
 
 class TableRK4test : public DataTransferObj
 {
-private:
-    pair<double,double> RK4(double x0, double v0, double h0, double (*func)(double, double))
-    {
-        double k1 = func(x0, v0);
-        double k2 = func(x0 + h0 / 2, v0 + (h0 * k1) / 2);
-        double k3 = func(x0 + h0 / 2, v0 + (h0 * k2) / 2);
-        double k4 = func(x0 + h0, v0 + h0 * k3);
-
-        double v1 = v0 + h0 * (k1 + 2 * k2 + 2 * k3 + k4) / 6;
-        double x1 = x0 + h0;
-
-        pair<double,double> result = { x1, v1 };
-        return result;
-    }
-    
 public:
 
     void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
@@ -57,6 +33,7 @@ public:
 
         xi.push_back(x0);
         vi.push_back(u0);
+        generalSolutionU u(x0,u0);
         for (int i = 0; i < Hmax; i++)
         {
             //считаем 1 большой шаг, и 2 коротких шага
@@ -74,8 +51,8 @@ public:
             hi.push_back(h0);
             c1.push_back(0);
             c2.push_back(0);
-            ui.push_back(uTestRed(result_simpleTurn.first, x0, u0));
-            diff_ui_vi.push_back(fabs(uTestRed(result_simpleTurn.first, x0, u0) - result_simpleTurn.second));
+            ui.push_back(u(result_simpleTurn.first));
+            diff_ui_vi.push_back(fabs(u(result_simpleTurn.first) - result_simpleTurn.second));
 
 
             //Проверяем выход за границу(в видосе так сказано делать)
@@ -110,8 +87,8 @@ public:
                 olp.push_back(S * pow(2, 4));
                 hi.push_back(h0);
                 
-                ui.push_back(uTestRed(result_simpleTurn.first, x0, u0));
-                diff_ui_vi.push_back(fabs(uTestRed(result_simpleTurn.first, x0, u0) - result_simpleTurn.second));
+                ui.push_back(u(result_simpleTurn.first));
+                diff_ui_vi.push_back(fabs(u(result_simpleTurn.first) - result_simpleTurn.second));
 
                 break;
             }
@@ -143,6 +120,7 @@ public:
 
         xi.push_back(x0);
         vi.push_back(u0);
+        generalSolutionU u(x0,u0);
 
         for (int i = 0; i < Hmax; i++)
         {
@@ -176,8 +154,8 @@ public:
             hi.push_back(h0);
             c1.push_back(c1count);
             c2.push_back(c2count);
-            ui.push_back(uTestRed(result_simpleTurn.first, x0, u0));
-            diff_ui_vi.push_back(fabs(uTestRed(result_simpleTurn.first, x0, u0) - result_simpleTurn.second));
+            ui.push_back(u(result_simpleTurn.first));
+            diff_ui_vi.push_back(fabs(u(result_simpleTurn.first) - result_simpleTurn.second));
 
 
             //Проверяем выход за границу(в видосе так сказано делать)
@@ -213,8 +191,8 @@ public:
                 olp.push_back(S * pow(2, 4));
                 hi.push_back(h0);
                 
-                ui.push_back(uTestRed(result_simpleTurn.first, x0, u0));
-                diff_ui_vi.push_back(fabs(uTestRed(result_simpleTurn.first, x0, u0) - result_simpleTurn.second));
+                ui.push_back(u(result_simpleTurn.first));
+                diff_ui_vi.push_back(fabs(u(result_simpleTurn.first) - result_simpleTurn.second));
 
                 break;
             }
@@ -227,21 +205,6 @@ public:
 
 class TableRK4_1task : public DataTransferObj
 {
-private:
-    pair<double, double> RK4(double x0, double v0, double h0, double (*func)(double, double))
-    {
-        double k1 = func(x0, v0);
-        double k2 = func(x0 + h0 / 2, v0 + (h0 * k1) / 2);
-        double k3 = func(x0 + h0 / 2, v0 + (h0 * k2) / 2);
-        double k4 = func(x0 + h0, v0 + h0 * k3);
-
-        double v1 = v0 + h0 * (k1 + 2 * k2 + 2 * k3 + k4) / 6;
-        double x1 = x0 + h0;
-
-        pair<double, double> result = { x1, v1 };
-        return result;
-    }
-
 public:
 
     void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override

@@ -2,6 +2,7 @@
 #include "table_rk4.h"
 #include "table_rk4_system.h"
 #include "rk4_system.h"
+#include "functions.h"
 
 void TaskManager::setParams(TaskParameters* settings) {
     params = settings;
