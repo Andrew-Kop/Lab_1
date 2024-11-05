@@ -390,14 +390,16 @@ void MainWindow::startCalculation() {
     customPlot->xAxis->setRange(xMin - offset, xMax + offset);
     customPlot->yAxis->setRange(yMin - offset, yMax + offset);
 
-    double xMin_1 = *std::min_element(data.vi.begin(), data.vi.end());
-    double xMax_1 = *std::max_element(data.vi.begin(), data.vi.end());
-    double yMin_1 = *std::min_element(data.firstDer.begin(), data.firstDer.end());
-    double yMax_1 = *std::max_element(data.firstDer.begin(), data.firstDer.end());
+    if (params.taskTypeInd == 2) {
+        double xMin_1 = *std::min_element(data.vi.begin(), data.vi.end());
+        double xMax_1 = *std::max_element(data.vi.begin(), data.vi.end());
+        double yMin_1 = *std::min_element(data.firstDer.begin(), data.firstDer.end());
+        double yMax_1 = *std::max_element(data.firstDer.begin(), data.firstDer.end());
 
-    // Установка диапазона осей с небольшим отступом
-    phasePortraitPlot->xAxis->setRange(xMin_1 - offset, xMax_1 + offset);
-    phasePortraitPlot->yAxis->setRange(yMin_1 - offset, yMax_1 + offset);
+        // Установка диапазона осей с небольшим отступом
+        phasePortraitPlot->xAxis->setRange(xMin_1 - offset, xMax_1 + offset);
+        phasePortraitPlot->yAxis->setRange(yMin_1 - offset, yMax_1 + offset);
+    }
 
     // Отображение легенды
     customPlot->legend->setVisible(true);
@@ -441,7 +443,6 @@ void MainWindow::startCalculation() {
 
     // надо будет поменять под таблицы для второй основной
     case 1:
-    case 2:
         resultsTableMainTask->clearContents();
         resultsTableMainTask->setRowCount(data.xi.length());
 
@@ -451,6 +452,32 @@ void MainWindow::startCalculation() {
                 QString::number(row), // i
                 QString::number(data.xi.at(row)), // xi
                 QString::number(data.vi.at(row)), // vi
+                QString::number(data.resultSteps2.at(row)), // v2i
+                QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
+                QString::number(data.olp.at(row)), // olp
+                QString::number(data.hi.at(row)), // hi
+                QString::number(data.c1.at(row)), // c1
+                QString::number(data.c2.at(row)), // c2
+            };
+
+            for (int col = 0; col < currentRowData.size(); col++) {
+                resultsTableMainTask->setItem(row, col, new QTableWidgetItem(currentRowData.at(col)));
+            }
+        }
+
+        break;
+
+
+    case 2:
+        resultsTableMainTask->clearContents();
+        resultsTableMainTask->setRowCount(data.xi.length());
+
+        for (int row = 0; row < data.xi.length(); ++row) {
+            // Заполняем ячейки
+            currentRowData = {
+                QString::number(row), // i
+                QString::number(data.xi.at(row)), // xi
+                QString::number(data.firstDer.at(row)), // vi
                 QString::number(data.resultSteps2.at(row)), // v2i
                 QString::number(data.diff_vi_v2i.at(row)), // vi - v2i
                 QString::number(data.olp.at(row)), // olp
