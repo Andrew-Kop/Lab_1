@@ -9,14 +9,14 @@ using std::vector;
 
 
 
-//–унге  утта 4 пор€дка дл€ системы
+//ѕровер€ем выход за границу(в видосе так сказано делать)
 vector<double> rk4_system(double x0, double u01, double u02, double h0, system_du system)
 {
 	pair<double, double>k1 = system(x0, u01, u02);
-	pair<double, double>k2 = system(x0 + h0 / 2, u01 + h0 / 2 * k1.first, u02 + h0 / 2 * k1.second);
-	pair<double, double>k3 = system(x0 + h0 / 2, u01 + h0 / 2 * k2.first, u02 + h0 / 2 * k2.second);
+    pair<double, double>k2 = system(x0 + h0 / 2.0, u01 + h0 / 2.0 * k1.first, u02 + h0 / 2.0 * k1.second);
+    pair<double, double>k3 = system(x0 + h0 / 2.0, u01 + h0 / 2.0 * k2.first, u02 + h0 / 2.0 * k2.second);
 	pair<double, double>k4 = system(x0 + h0, u01 + h0 * k3.first, u02 + h0 * k3.second);
-	pair<double, double> result = { u01 + h0 / 6 * (k1.first + 2 * k2.first + 2 * k3.first + k4.first), u02 + h0 / 6 * (k1.second + 2 * k2.second + 2 * k3.second + k4.second) };
+    pair<double, double> result = { u01 + h0 / 6.0 * (k1.first + 2.0 * k2.first + 2.0 * k3.first + k4.first), u02 + h0 / 6.0 * (k1.second + 2.0 * k2.second + 2.0 * k3.second + k4.second) };
 	double x1 = x0 + h0;
 	return { x1, result.first, result.second };
 }
@@ -31,7 +31,7 @@ vector<vector<double>> numericalSolutionSystem(double x0, double u01, double u02
 	{
 		finalResult.push_back(rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], h0, system)); //добавл€ем элемент (Xn, Vn) в вектор численной траектории
 
-		//ѕровер€ем выход за границу(в видосе так сказано делать)
+        //ѕровер€ем выход за границу(в видосе так сказано делать)
 		if (finalResult.back()[0] >= (B - Egr) && finalResult.back()[0] <= B)
 		{
 			break;
@@ -64,8 +64,8 @@ vector<vector<double>> numericalSolutionSystemWithControl(double x0, double u01,
 
         double S1 = (resuslt_2_halfTurn[1] - result_simpleTurn[1]) / (pow(2, 4) - 1); 
         double S2 = (resuslt_2_halfTurn[2] - result_simpleTurn[2]) / (pow(2, 4) - 1); 
-		double S = std::max(fabs(S1), fabs(S2)); //норма вектора S
-        //выбираем что делать дальше
+        double S = std::max(fabs(S1), fabs(S2)); //норма вектора S
+        //считаем 1 большой шаг, и 2 коротких шага
         if ((E / pow(2, 5)) <= S && S <= E)//значение в пределах допустмиого, принимаем и идЄм дальше
         {
             finalResult.push_back(result_simpleTurn);

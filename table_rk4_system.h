@@ -13,9 +13,14 @@ using std::list;
 
 
 class TableRK4_2task : public DataTransferObj
+/*  ласс дл€ расчЄта результатов и занесени€ их в таблицу дл€ основной 2 задачи
+ * метод solveWithoutControl - высчитывание численной траектории и промежуточных результатов без контрол€ локальной погрешности
+ * метод solveWithControl - высчитывание численной траектории и промежуточных результатов с контролем локальной погрешности
+*/
 {
-   
 public:
+    //„исленное решение без контрол€ локальной погрешности.
+    //initVals - начальные услови€, h0 - шаг интегрировани€, func - функци€ в ƒ”, B - гранциа вычислени€, Hmax - максимальное число шагов, Egr - контроль выхода за границу
     void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
     {
 
@@ -41,11 +46,11 @@ public:
         {
             //считаем 1 большой шаг, и 2 коротких шага
             vector<double> result_simpleTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], h0, system);
-            vector<double> result_halfTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], h0 / 2, system);
-            vector<double> result_2_halfTurn = rk4_system(result_halfTurn[0], result_halfTurn[1], result_halfTurn[2], (h0 / 2), system);
+            vector<double> result_halfTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], h0 / 2.0, system);
+            vector<double> result_2_halfTurn = rk4_system(result_halfTurn[0], result_halfTurn[1], result_halfTurn[2], (h0 / 2.0), system);
 
-            double S1 = (result_2_halfTurn[1] - result_simpleTurn[1]) / (pow(2, 4) - 1);
-            double S2 = (result_2_halfTurn[2] - result_simpleTurn[2]) / (pow(2, 4) - 1);
+            double S1 = (result_2_halfTurn[1] - result_simpleTurn[1]) / (pow(2, 4) - 1.0);
+            double S2 = (result_2_halfTurn[2] - result_simpleTurn[2]) / (pow(2, 4) - 1.0);
             double S = std::max(fabs(S1), fabs(S2)); //норма вектора S
 
             finalResult.push_back(result_simpleTurn); //добавл€ем элемент (Xn, V1n, V2n) в лист численной траектории
@@ -97,6 +102,8 @@ public:
         }
     }
 
+    //„исленное решение с контролем локальной погрешности.
+    //initVals - начальные услови€, h0 - шаг интегрировани€, func - функци€ в ƒ”, B - гранциа вычислени€, Hmax - максимальное число шагов, E - погрешность, Egr - контроль выхода за границу
     void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
 
@@ -127,12 +134,12 @@ public:
         {
             //считаем 1 большой шаг, и 2 коротких шага
             vector<double> result_simpleTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], H, system);
-            vector<double> result_halfTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], H / 2, system);
-            vector<double> result_2_halfTurn = rk4_system(result_halfTurn[0], result_halfTurn[1], result_halfTurn[2], (H / 2), system);
+            vector<double> result_halfTurn = rk4_system(finalResult.back()[0], finalResult.back()[1], finalResult.back()[2], H / 2.0, system);
+            vector<double> result_2_halfTurn = rk4_system(result_halfTurn[0], result_halfTurn[1], result_halfTurn[2], (H / 2.0), system);
 
             double S1 = (result_2_halfTurn[1] - result_simpleTurn[1]) / (pow(2, 4) - 1);
             double S2 = (result_2_halfTurn[2] - result_simpleTurn[2]) / (pow(2, 4) - 1);
-            double S = std::max(fabs(S1), fabs(S2));
+            double S = std::max(fabs(S1), fabs(S2)); // Ќорма вектора S
 
             double hOld = H;
             //выбираем что делать дальше
@@ -163,7 +170,7 @@ public:
 
 
 
-            //ѕровер€ем выход за границу(в видосе так сказано делать)
+            //ѕровер€ем выход за границу
             if (finalResult.back()[0] >= (B - Egr) && finalResult.back()[0] <= B)
             {
                 break;
