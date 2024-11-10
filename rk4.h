@@ -7,11 +7,11 @@
 std::pair<double,double> RK4(double x0, double v0, double h0, double (*func)(double, double))
 {
     double k1 = func(x0, v0);
-    double k2 = func(x0 + (h0 / 2), v0 + (h0 / 2) * k1);
-    double k3 = func(x0 + (h0 / 2), v0 + (h0 / 2) * k2);
+    double k2 = func(x0 + (h0 / 2.0), v0 + (h0 / 2.0) * k1);
+    double k3 = func(x0 + (h0 / 2.0), v0 + (h0 / 2.0) * k2);
     double k4 = func(x0 + h0, v0 + h0 * k3);
 
-    double v1 = v0 + (h0 / 6) * (k1 + 2 * k2 + 2 * k3 + k4);
+    double v1 = v0 + (h0 / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
     double x1 = x0 + h0;
 
     std::pair<double,double> result = { x1, v1 };
@@ -30,7 +30,7 @@ std::vector<std::pair<double,double>> numericalSolution(double x0, double u0, do
     {
         finalResult.push_back(RK4(finalResult.back().first, finalResult.back().second, h0, func)); //добавляем элемент (Xn, Vn) в вектор численной траектории
 
-        //Проверяем выход за границу(в видосе так сказано делать)
+        //Проверяем выход за границу
         if(finalResult.back().first >= (B - Egr) && finalResult.back().first <= B)
         {
             break;
@@ -68,7 +68,7 @@ std::vector<std::pair<double,double>> numericalSolutionWithControl(double x0, do
         {
             finalResult.push_back(result_simpleTurn);
         }
-        else if (fabs(S) < (E / pow(2, 5))) //значение слишком точное, принимаем и удваиваем шаг
+        else if (fabs(S) < (E / pow(2, 5)))//значение слишком точное, принимаем и удваиваем шаг
         {
             finalResult.push_back(result_simpleTurn);
             H = H * 2;

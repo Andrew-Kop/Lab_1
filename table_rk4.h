@@ -11,9 +11,15 @@ using std::list;
 
 
 class TableRK4test : public DataTransferObj
+/* Класс для расчёта результатов и занесения их в таблицу для тестовой задачи
+ * метод solveWithoutControl - высчитывание численной траектории и промежуточных результатов без контроля локальной погрешности
+ * метод solveWithControl - высчитывание численной траектории и промежуточных результатов с контролем локальной погрешности
+*/
 {
 public:
 
+    //Численное решение без контроля локальной погрешности.
+    //initVals - начальные условия, h0 - шаг интегрирования, func - функция в ДУ, B - гранциа вычисления, Hmax - максимальное число шагов, Egr - контроль выхода за границу
     void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
 	{
 
@@ -38,15 +44,15 @@ public:
         {
             //считаем 1 большой шаг, и 2 коротких шага
             pair<double,double> result_simpleTurn = RK4(xi.back(), vi.back(), h0, testFuncDu);
-            pair<double,double> result_halfTurn = RK4(xi.back(), vi.back(), (h0 / 2), testFuncDu);
-            pair<double,double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h0 / 2), testFuncDu);
+            pair<double,double> result_halfTurn = RK4(xi.back(), vi.back(), (h0 / 2.0), testFuncDu);
+            pair<double,double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h0 / 2.0), testFuncDu);
 
             xi.push_back(result_simpleTurn.first); //добавляем элемент (Xn, Vn) в вектор численной траектории
             vi.push_back(result_simpleTurn.second);
             resultSteps2.push_back(result_2_halfTurn.second);
             diff_vi_v2i.push_back(result_2_halfTurn.second - result_simpleTurn.second);
 
-            double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
+            double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1.0);
             olp.push_back(S * pow(2, 4));
             hi.push_back(h0);
             c1.push_back(0);
@@ -55,7 +61,7 @@ public:
             diff_ui_vi.push_back(fabs(u(result_simpleTurn.first) - result_simpleTurn.second));
 
 
-            //Проверяем выход за границу(в видосе так сказано делать)
+            //Проверяем выход за границу
             if (xi.back() >= (B - Egr) && xi.back() <= B)
             {
                 break;
@@ -75,10 +81,10 @@ public:
                 double h1 = B - xi.back() - Egr;
 
                 pair<double, double> result_simpleTurn = RK4(xi.back(), vi.back(), h1, testFuncDu);
-                pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h1 / 2), testFuncDu);
-                pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h1 / 2), testFuncDu);
+                pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h1 / 2.0), testFuncDu);
+                pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h1 / 2.0), testFuncDu);
 
-                double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
+                double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1.0);
 
                 xi.push_back(result_simpleTurn.first); //пока таким способом, то есть если вы вышли за границу то послдений Xn = b - Egr
                 vi.push_back(result_simpleTurn.second);
@@ -97,6 +103,8 @@ public:
         vi.pop_front();
 	}
 
+    //Численное решение с контролем локальной погрешности.
+    //initVals - начальные условия, h0 - шаг интегрирования, func - функция в ДУ, B - гранциа вычисления, Hmax - максимальное число шагов, E - погрешность, Egr - контроль выхода за границу
     void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
 
@@ -126,8 +134,8 @@ public:
         {
             //считаем 1 большой шаг, и 2 коротких шага
             pair<double, double> result_simpleTurn = RK4(xi.back(), vi.back(), H, testFuncDu);
-            pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (H / 2), testFuncDu);
-            pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (H / 2), testFuncDu);
+            pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (H / 2.0), testFuncDu);
+            pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (H / 2.0), testFuncDu);
 
             double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
 
@@ -135,12 +143,12 @@ public:
             double h0 = H;
             if (fabs(S) < (E / pow(2, 5))) //значение слишком точное, принимаем и удваиваем шаг
             {
-                H = H * 2;
+                H = H * 2.0;
                 c2count++;
             }
             else if (fabs(S) >= E) //значение слишком неточное, уменьшаем шаг в два раза и пересчитываем
             {
-                H = H / 2;
+                H = H / 2.0;
                 c1count++;
                 i--;
                 continue;
@@ -178,10 +186,10 @@ public:
                 double h1 = B - xi.back() - Egr;
 
                 pair<double, double> result_simpleTurn = RK4(xi.back(), vi.back(), h1, testFuncDu);
-                pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h1 / 2), testFuncDu);
-                pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h1 / 2), testFuncDu);
+                pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h1 / 2.0), testFuncDu);
+                pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h1 / 2.0), testFuncDu);
 
-                double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1);
+                double S = (result_2_halfTurn.second - result_simpleTurn.second) / (pow(2, 4) - 1.0);
 
                 //пока таким способом, то есть если вы вышли за границу то послдений Xn = b - Egr
                 xi.push_back(result_simpleTurn.first);
@@ -205,8 +213,13 @@ public:
 
 class TableRK4_1task : public DataTransferObj
 {
-public:
-
+/* Класс для расчёта результатов и занесения их в таблицу для основной первое задачи
+ * метод solveWithoutControl - высчитывание численной траектории и промежуточных результатов без контроля локальной погрешности
+ * метод solveWithControl - высчитывание численной траектории и промежуточных результатов с контролем локальной погрешности
+*/
+public:    
+    //Численное решение без контроля локальной погрешности.
+    //initVals - начальные условия, h0 - шаг интегрирования, func - функция в ДУ, B - гранциа вычисления, Hmax - максимальное число шагов, Egr - контроль выхода за границу
     void solveWithoutControl(const QList<double>& initVals, double h0, double B, int Hmax, double Egr = 0.001) override
     {
 
@@ -228,8 +241,8 @@ public:
         {
             //считаем 1 большой шаг, и 2 коротких шага
             pair<double, double> result_simpleTurn = RK4(xi.back(), vi.back(), h0, testFuncDu);
-            pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h0 / 2), testFuncDu);
-            pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h0 / 2), testFuncDu);
+            pair<double, double> result_halfTurn = RK4(xi.back(), vi.back(), (h0 / 2.0), testFuncDu);
+            pair<double, double> result_2_halfTurn = RK4(result_halfTurn.first, result_halfTurn.second, (h0 / 2.0), testFuncDu);
 
             xi.push_back(result_simpleTurn.first); //добавляем элемент (Xn, Vn) в вектор численной траектории
             vi.push_back(result_simpleTurn.second);
@@ -282,6 +295,8 @@ public:
         vi.pop_front();
     }
 
+    //Численное решение с контролем локальной погрешности.
+    //initVals - начальные условия, h0 - шаг интегрирования, func - функция в ДУ, B - гранциа вычисления, Hmax - максимальное число шагов, E - погрешность, Egr - контроль выхода за границу
     void solveWithControl(const QList<double>& initVals, double h0, double B, int Hmax, double E, double Egr = 0.001) override
     {
 
