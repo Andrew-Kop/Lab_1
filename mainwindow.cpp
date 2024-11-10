@@ -210,51 +210,53 @@ void MainWindow::onTaskTypeChanged(int index) {
 bool MainWindow::validateInput(int index) {
     bool ok;
 
-    // Validate Nmax as positive integer
+    // Проверка, что Nmax является положительным целым числом
     int nMax = nMaxInput->text().toInt(&ok);
     if (!ok || nMax <= 0) {
-        QMessageBox::warning(this, "Invalid Input", "Please enter a positive integer for Nmax.");
+        QMessageBox::warning(this, "Некорректный ввод", "Введите положительное целое число для Nmax.");
         return false;
     }
 
-    // Validate epsilon as positive double
+    // Проверка, что epsilon является положительным числом с плавающей точкой
     double epsilon = epsilonInput->text().toDouble(&ok);
     if (!ok || epsilon <= 0.0) {
-        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Epsilon.");
+        QMessageBox::warning(this, "Некорректный ввод", "Введите положительное число для Epsilon.");
         return false;
     }
 
-    // Validate boundary precision as positive double
+    // Проверка, что точность границы является положительным числом с плавающей точкой
     double boundaryPrecision = boundaryPrecisionInput->text().toDouble(&ok);
     if (!ok || boundaryPrecision <= 0.0) {
-        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Boundary Precision.");
+        QMessageBox::warning(this, "Некорректный ввод", "Введите положительное число для Точности границы.");
         return false;
     }
 
-    // Validate initial step as positive double
+    // Проверка, что начальный шаг является положительным числом с плавающей точкой
     double initialStep = initialStepInput->text().toDouble(&ok);
     if (!ok || initialStep <= 0.0) {
-        QMessageBox::warning(this, "Invalid Input", "Please enter a positive number for Initial Step.");
+        QMessageBox::warning(this, "Некорректный ввод", "Введите положительное число для Начального шага.");
         return false;
     }
 
-    // Validate right border as positive integer
+    // Проверка, что правая граница является положительным целым числом
     int rightBorder = rightborder->text().toInt(&ok);
     if (!ok || rightBorder <= 0) {
-        QMessageBox::warning(this, "Invalid Input", "Please enter a positive integer for Right Border.");
+        QMessageBox::warning(this, "Некорректный ввод", "Введите положительное целое число для Правой границы.");
         return false;
     }
-    if (index ==2){
-        // Additional parameters as doubles
+
+    if (index == 2) {
+        // Дополнительный параметр 1 как число с плавающей точкой
         double param1 = additionalParam1->text().toDouble(&ok);
         if (!ok) {
-            QMessageBox::warning(this, "Invalid Input", "Please enter a valid number for Additional Parameter 1.");
+            QMessageBox::warning(this, "Некорректный ввод", "Введите допустимое число для Дополнительного параметра 1.");
             return false;
         }
 
+        // Дополнительный параметр 2 как число с плавающей точкой
         double param2 = additionalParam2->text().toDouble(&ok);
         if (!ok) {
-            QMessageBox::warning(this, "Invalid Input", "Please enter a valid number for Additional Parameter 2.");
+            QMessageBox::warning(this, "Некорректный ввод", "Введите допустимое число для Дополнительного параметра 2.");
             return false;
         }
     }
