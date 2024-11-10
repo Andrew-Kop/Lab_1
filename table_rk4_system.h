@@ -5,6 +5,7 @@
 #include "rk4_system.h"
 #include "DataTransferObj.h"
 #include <QList>
+#include "functions.h"
 using std::vector;
 using std::pair;
 using std::list;

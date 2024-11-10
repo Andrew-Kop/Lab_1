@@ -18,6 +18,7 @@ HEADERS += \
     DataTransferObj.h \
     TaskManager.h \
     TaskParameters.h \
+    functions.h \
     mainwindow.h \
     qcustomplot.h \
     rk4.h \

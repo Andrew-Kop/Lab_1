@@ -2,28 +2,12 @@
 #include <cmath>
 #include <list>
 #include <vector>
+#include "functions.h"
 using std::list;
 using std::pair;
 using std::vector;
 
 
-//—истема ƒу с заданными пармаетрами а и b
-class system_du
-{
-private:
-	double a, b;
-public:
-	system_du(double a, double b): a(a), b(b)
-	{
-	}
-	pair<double, double> operator()(double x, double u1, double u2) //u1' = u2; u2' = -a*sqrt(u2^2 + 1) - b. 
-	{
-		pair<double, double> result;
-		result.first = u2;
-		result.second = -a * sqrt(pow(u2, 2) + 1) - b;
-		return result;
-	}
-};
 
 //–унге  утта 4 пор€дка дл€ системы
 vector<double> rk4_system(double x0, double u01, double u02, double h0, system_du system)
@@ -39,9 +23,9 @@ vector<double> rk4_system(double x0, double u01, double u02, double h0, system_d
 
 //„исленное решение без контрол€ локальной погрешности.
 //x0 - нач. знач. икса, u01 - первое нач. знач. решени€, u02 - второе нач. знач. решени€, h0 - шаг интегрировани€, system - система 2 пор€дка ƒ”, B - гранциа вычислени€, Hmax - максимальное число шагов, Egr - контроль выхода за границу
-list<vector<double>> numericalSolutionSystem(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax,  double Egr = 0.001)
+vector<vector<double>> numericalSolutionSystem(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax,  double Egr = 0.001)
 {
-	list<vector<double>> finalResult;
+    vector<vector<double>> finalResult;
 	finalResult.push_back({ x0,u01,u02 });
 	for (int i = 0; i < Hmax; i++)
 	{
@@ -64,9 +48,9 @@ list<vector<double>> numericalSolutionSystem(double x0, double u01, double u02, 
 
 //„исленное решение с контролем локальной погрешности.
 //x0 - нач. знач. икса, u01 - первое нач. знач. решени€, u02 - второе нач. знач. решени€, h0 - шаг интегрировани€, system - система 2 пор€дка ƒ”, B - гранциа вычислени€, Hmax - максимальное число шагов, Egr - контроль выхода за границу
-list<vector<double>> numericalSolutionSystemWithControl(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax, double E, double Egr = 0.001)
+vector<vector<double>> numericalSolutionSystemWithControl(double x0, double u01, double u02, double h0, system_du system, double B, int Hmax, double E, double Egr = 0.001)
 {
-    list<vector<double>> finalResult;
+    vector<vector<double>> finalResult;
     finalResult.push_back({ x0,u01,u02 });
 
 
